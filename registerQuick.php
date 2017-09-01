@@ -7,7 +7,7 @@
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 0.2.0
+ * @version 0.2.1
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,6 +109,18 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     {
         $iSurveyId=$this->getEvent()->get('surveyid');
         if($this->get('quickRegistering','Survey',$iSurveyId)){
+            /* Control survey access and Fix langage according to survey @see https://bugs.limesurvey.org/view.php?id=12641 */
+            $oSurvey=Survey::model()->findByPK($iSurveyId);
+            if (!$oSurvey) {
+                throw new CHttpException(404, "The survey in which you are trying to participate does not seem to exist. It may have been deleted or the link you were given is outdated or incorrect.");
+            } elseif($oSurvey->allowregister!='Y' || !tableExists("{{tokens_{$iSurveyId}}}")) {
+                throw new CHttpException(404,"The survey in which you are trying to register don't accept registration. It may have been updated or the link you were given is outdated or incorrect.");
+            } elseif(!is_null($oSurvey->expires) && $oSurvey->expires < dateShift(date("Y-m-d H:i:s"), "Y-m-d H:i", Yii::app()->getConfig('timeadjust'))) {
+                $this->redirect(array('survey/index','sid'=>$iSurveyId,'lang'=>$sLanguage));
+            }
+            if(!in_array(App()->language,$oSurvey->getAllLanguages())) {
+                Yii::app()->setLanguage($oSurvey->language);
+            }
             if((Yii::app()->request->getPost('register'))){
                 $this->_validateForm($iSurveyId);
             }
