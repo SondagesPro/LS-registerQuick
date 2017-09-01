@@ -5,8 +5,9 @@
  * @author Denis Chenu <denis@sondages.pro>
  * @copyright 2017 Denis Chenu <http://www.sondages.pro>
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
+ * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 0.0.1
+ * @version 0.2.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +67,18 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
                     ),
                     'current'=>$this->get('emailValidation','Survey',$oEvent->get('survey'),"")
                 ),
+                'emailMultiple' => array(
+                    'type'=>'select',
+                    'label'=>$this->_translate('Multiple Email'),
+                    'options'=>array(
+                        'getold' => $this->_translate("Get the old one (and follow default behaviour)"),
+                        'renew'=> $this->_translate("Create a new one if already completed"),
+                    ),
+                    'htmlOptions'=>array(
+                        'empty'=>$this->_translate("Create a new token each time."),
+                    ),
+                    'current'=>$this->get('emailMultiple','Survey',$oEvent->get('survey'),"")
+                ),
                 'emailSend'=>array(
                     'type'=>'boolean',
                     'label'=>$this->_translate('Send the email (if exist).'),
@@ -107,7 +120,6 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     public function beforeRegisterForm()
     {
         $iSurveyId=$this->getEvent()->get('surveyid');
-
         if($this->get('quickRegistering','Survey',$iSurveyId)){
             $this->getEvent()->set('registerForm',$this->_getRegisterForm($iSurveyId));
         }
@@ -120,14 +132,15 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
      */
     private function _validateForm($iSurveyId)
     {
-
         $this->_aRegisterError=$this->_getRegisterErrors($iSurveyId);
         if(empty($this->_aRegisterError)){
             $iTokenId=$this->_getTokenId($iSurveyId);
-            if($this->get('emailSend','Survey',$iSurveyId)){
-                $this->_sendRegistrationEmail($iSurveyId,$iTokenId);
+            if(empty($this->_aRegisterError)){
+                if($this->get('emailSend','Survey',$iSurveyId)){
+                    $this->_sendRegistrationEmail($iSurveyId,$iTokenId);
+                }
+                $this->_redirectToToken($iSurveyId,$iTokenId);
             }
-            $this->_redirectToToken($iSurveyId,$iTokenId);
         }
     }
 
@@ -159,24 +172,21 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
         $emailValidation=$this->get('emailValidation','Survey',$iSurveyId,'');
         $aData['showEmail']=(empty($emailValidation) || $emailValidation=='show');
         $aData['requiredEmail']=($emailValidation=='');
-        if(!empty($this->_aRegisterError))
-        {
+        if(!empty($this->_aRegisterError)) {
             $sRegisterError="<div class='alert alert-danger' role='alert'>"
             .implode('<br />',$this->_aRegisterError)
             ."</div>";
-        }
-        else
-        {
+        } else {
             $sRegisterError='';
         }
 
         $aReplacement['REGISTERERROR'] = $sRegisterError;
         $aReplacement['REGISTERMESSAGE1'] = gT("You must be registered to complete this survey");
-        if($sStartDate=$RegisterController->getStartDate($iSurveyId))
+        if($sStartDate=$RegisterController->getStartDate($iSurveyId)) {
             $aReplacement['REGISTERMESSAGE2'] = sprintf(gT("You may register for this survey but you have to wait for the %s before starting the survey."),$sStartDate)."<br />\n".gT("Enter your details below, and an email containing the link to participate in this survey will be sent immediately.");
-        else
+        } else {
             $aReplacement['REGISTERMESSAGE2'] = gT("You may register for this survey if you wish to take part.")."<br />\n".gT("Enter your details below, and an email containing the link to participate in this survey will be sent immediately.");
-
+        }
 
         //~ Yii::setPathOfAlias('registerQuick', dirname(__FILE__));
         $aReplacement['REGISTERFORM']=$this->renderPartial('registerForm',$aData,true);
@@ -201,6 +211,31 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
         $sLanguage=App()->language;
         $aSurveyInfo=getSurveyInfo($iSurveyId,$sLanguage);
         $aFieldValue=$RegisterController->getFieldValue($iSurveyId);
+        if($aFieldValue['sEmail']!="" && $this->get('emailMultiple','Survey',$iSurveyId)) {
+            tracevar($this->get('emailMultiple','Survey',$iSurveyId));
+            $oToken=Token::model($iSurveyId)->findByAttributes(array('email' => $aFieldValue['sEmail']));
+            if($oToken) {
+                tracevar($oToken->usesleft);
+                tracevar($aSurveyInfo['alloweditaftercompletion']);
+                if($oToken->usesleft<1 && $aSurveyInfo['alloweditaftercompletion']!='Y') {
+                    switch (trim($this->get('emailMultiple','Survey',$iSurveyId)) ) {
+                        case 'renew' :
+                            $oToken=null;
+                            break;
+                        case 'getold' :
+                        default :
+                            $this->_aRegisterError[]=gT("The email address you have entered is already registered and the survey has been completed.");
+                    }
+                } elseif(strtolower(substr(trim($oToken->emailstatus),0,6))==="optout") {
+                    $this->_aRegisterError[]=gT("This email address cannot be used because it was opted out of this survey.");
+                } elseif(!$oToken->emailstatus && $oToken->emailstatus!="OK") {
+                    $this->_aRegisterError[]=gT("This email address is already registered but the email adress was bounced.");
+                }
+            }
+        }
+        if($oToken) {
+            return $oToken->tid;
+        }
         $oToken= Token::create($iSurveyId);
         $oToken->firstname = sanitize_xss_string($aFieldValue['sFirstName']);
         $oToken->lastname = sanitize_xss_string($aFieldValue['sLastName']);
@@ -209,12 +244,10 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
         $oToken->language = $sLanguage;
         $aFieldValue['aAttribute']=array_map('sanitize_xss_string',$aFieldValue['aAttribute']);
         $oToken->setAttributes($aFieldValue['aAttribute']);
-        if ($aSurveyInfo['startdate'])
-        {
+        if ($aSurveyInfo['startdate']) {
             $oToken->validfrom = $aSurveyInfo['startdate'];
         }
-        if ($aSurveyInfo['expires'])
-        {
+        if ($aSurveyInfo['expires']) {
             $oToken->validuntil = $aSurveyInfo['expires'];
         }
         $oToken->generateToken();
