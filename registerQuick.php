@@ -7,7 +7,7 @@
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 0.2.3
+ * @version 0.2.4
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -253,7 +253,7 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
                 }
             }
         }
-        if($oToken) {
+        if(!empty($oToken)) {
             return $oToken->tid;
         }
         $oToken= Token::create($iSurveyId);
