@@ -7,7 +7,7 @@
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 0.2.1
+ * @version 0.2.3
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,12 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
 
     static protected $description = 'Quick register system, replace default register system by a quickest way.';
     static protected $name = 'registerQuick';
+
+    /**
+     * @var string langage to be used (and reseted) during all event
+     * @see https://bugs.limesurvey.org/view.php?id=12652
+     */
+    private $language;
 
     public function init()
     {
@@ -108,6 +114,8 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     public function beforeRegister()
     {
         $iSurveyId=$this->getEvent()->get('surveyid');
+        $this->language = App()->language;
+
         if($this->get('quickRegistering','Survey',$iSurveyId)){
             /* Control survey access and Fix langage according to survey @see https://bugs.limesurvey.org/view.php?id=12641 */
             $oSurvey=Survey::model()->findByPK($iSurveyId);
@@ -120,6 +128,7 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
             }
             if(!in_array(App()->language,$oSurvey->getAllLanguages())) {
                 Yii::app()->setLanguage($oSurvey->language);
+                $this->language = App()->language;
             }
             if((Yii::app()->request->getPost('register'))){
                 $this->_validateForm($iSurveyId);
@@ -133,6 +142,7 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     {
         $iSurveyId=$this->getEvent()->get('surveyid');
         if($this->get('quickRegistering','Survey',$iSurveyId)){
+            Yii::app()->setLanguage($this->language);
             $this->getEvent()->set('registerForm',$this->_getRegisterForm($iSurveyId));
         }
     }
@@ -220,15 +230,13 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     private function _getTokenId($iSurveyId){
         Yii::import('application.controllers.RegisterController');
         $RegisterController= new RegisterController('register');
+        Yii::app()->setLanguage($this->language);
         $sLanguage=App()->language;
         $aSurveyInfo=getSurveyInfo($iSurveyId,$sLanguage);
         $aFieldValue=$RegisterController->getFieldValue($iSurveyId);
         if($aFieldValue['sEmail']!="" && $this->get('emailMultiple','Survey',$iSurveyId)) {
-            tracevar($this->get('emailMultiple','Survey',$iSurveyId));
             $oToken=Token::model($iSurveyId)->findByAttributes(array('email' => $aFieldValue['sEmail']));
             if($oToken) {
-                tracevar($oToken->usesleft);
-                tracevar($aSurveyInfo['alloweditaftercompletion']);
                 if($oToken->usesleft<1 && $aSurveyInfo['alloweditaftercompletion']!='Y') {
                     switch (trim($this->get('emailMultiple','Survey',$iSurveyId)) ) {
                         case 'renew' :
@@ -275,6 +283,7 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
         Yii::import('application.controllers.RegisterController');
         $RegisterController= new RegisterController('register');
         $done =$RegisterController->sendRegistrationEmail($iSurveyId,$iTokenId);
+        Yii::app()->setLanguage($this->language);
         return $done;
     }
     /**
@@ -288,14 +297,12 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
         $aRegisterErrors=array();
 
         // Check the security question's answer
-        if (function_exists("ImageCreate") && isCaptchaEnabled('registrationscreen',$aSurveyInfo['usecaptcha']) )
-        {
+        if (function_exists("ImageCreate") && isCaptchaEnabled('registrationscreen',$aSurveyInfo['usecaptcha']) ) {
             $sLoadSecurity=Yii::app()->request->getPost('loadsecurity','');
             $captcha=Yii::app()->getController()->createAction("captcha");
             $captchaCorrect = $captcha->validate( $sLoadSecurity, false);
 
-            if (!$captchaCorrect)
-            {
+            if (!$captchaCorrect) {
                 $aRegisterErrors[] = gT("Your answer to the security question was not correct - please try again.");
             }
         }
@@ -329,8 +336,10 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     private function _redirectToToken($iSurveyId,$iTokenId){
         $oToken = Token::model($iSurveyId)->findByPk($iTokenId);
         $sToken=$oToken->token;
+        Yii::app()->setLanguage($this->language);
         $sLanguage=App()->language;
         $redirectUrl=App()->createUrl("/survey/index/",array('sid'=>$iSurveyId,'lang'=>$sLanguage,'token'=>$sToken,'newtest'=>'Y'));
+
         Yii::app()->getRequest()->redirect($redirectUrl);
     }
     /**
