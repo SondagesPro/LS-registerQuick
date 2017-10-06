@@ -7,7 +7,7 @@
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 0.2.4
+ * @version 0.2.5
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
                     'type'=>'select',
                     'label'=>$this->_translate('Multiple Email'),
                     'options'=>array(
-                        'getold' => $this->_translate("Get the old one (and follow default behaviour)"),
+                        'getold' => $this->_translate("Get the old one."),
                         'renew'=> $this->_translate("Create a new one if already completed"),
                     ),
                     'htmlOptions'=>array(
@@ -85,10 +85,22 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
                     ),
                     'current'=>$this->get('emailMultiple','Survey',$oEvent->get('survey'),"")
                 ),
+                'emailSecurity'=>array(
+                    'type'=>'boolean',
+                    'label'=>$this->_translate('If email exist : disable reloading survey without token.'),
+                    'help'=>$this->_translate("Warning: enabling reload of survey only with the e-mail address can cause privacy issue. The message will be sent if the email address exists."),
+                    'current'=>$this->get('emailSecurity','Survey',$oEvent->get('survey'),1)
+                ),
                 'emailSend'=>array(
                     'type'=>'boolean',
-                    'label'=>$this->_translate('Send the email (if exist).'),
+                    'label'=>$this->_translate('Send the email.'),
+                    'help'=>$this->_translate("If user put an email address, the register message will be sent."),
                     'current'=>$this->get('emailSend','Survey',$oEvent->get('survey'),0)
+                ),
+                'showTokenForm'=>array(
+                    'type'=>'boolean',
+                    'label'=>$this->_translate('Show the token form.'),
+                    'current'=>$this->get('showTokenForm','Survey',$oEvent->get('survey'),0)
                 ),
             )
         ));
@@ -250,6 +262,11 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
                     $this->_aRegisterError[]=gT("This email address cannot be used because it was opted out of this survey.");
                 } elseif(!$oToken->emailstatus && $oToken->emailstatus!="OK") {
                     $this->_aRegisterError[]=gT("This email address is already registered but the email adress was bounced.");
+                } elseif($aSurveyInfo['alloweditaftercompletion']=='Y' || $oToken->usesleft > 0) {
+                    if($this->get('emailSecurity','Survey',$iSurveyId,1)) {
+                        $this->_aRegisterError[]=gT("This email address is already registered, entering in survey is only allowed with token.");
+                        $this->_sendRegistrationEmail($iSurveyId,$oToken->tid);
+                    }
                 }
             }
         }
@@ -318,8 +335,7 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
             $aRegisterErrors[]= gT("You must enter a valid email. Please try again.");
         }
         //Check and validate attribute
-        foreach ($aRegisterAttributes as $key => $aAttribute)
-        {
+        foreach ($aRegisterAttributes as $key => $aAttribute) {
             if ($aAttribute['show_register'] == 'Y' && $aAttribute['mandatory'] == 'Y' && empty($aFieldValue['aAttribute'][$key]))
             {
                 $aRegisterErrors[]= sprintf(gT("%s cannot be left empty").".", $aAttribute['caption']);
