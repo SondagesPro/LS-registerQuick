@@ -7,7 +7,7 @@
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 0.2.5
+ * @version 0.3.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -206,6 +206,11 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
         $emailValidation=$this->get('emailValidation','Survey',$iSurveyId,'');
         $aData['showEmail']=(empty($emailValidation) || $emailValidation=='show');
         $aData['requiredEmail']=($emailValidation=='');
+        $aData['showTokenForm']=$this->get('showTokenForm','Survey',$iSurveyId,'');
+        // Must control token form too …
+        if($aData['showTokenForm']) {
+            $aData['urlToken']=App()->createUrl('survey/index',array('sid'=>$iSurveyId));
+        }
         if(!empty($this->_aRegisterError)) {
             $sRegisterError="<div class='alert alert-danger' role='alert'>"
             .implode('<br />',$this->_aRegisterError)
