@@ -73,17 +73,17 @@
     </div>
     <?php echo CHtml::form($urlToken,'post',array(
                 'id' => 'tokenform',
-                'class' => 'form-horizontal col-sm-12 col-md-10 col-md-offset-1'
+                'class' => 'form-horizontal'
             )
         );?>
-    <div class='form-group col-sm-12'>
+    <div class='form-group'>
         <label for='token' class='control-label col-md-4'><?php eT("Token: "); ?></label>
         <div class="col-sm-12 col-md-6">
             <?php echo CHtml::passwordField('token', '',array('id'=>'token','class'=>'form-control input-sm','required' => 'required')); ?>
         </div>
     </div>
     <?php echo CHtml::hiddenField('lang', $sLanguage, array('id' => 'lang')); ?>
-    <div class='form-group col-sm-12'>
+    <div class='form-group'>
         <div class="col-sm-12 col-md-3 col-md-offset-9">
             <?php echo CHtml::submitButton(gT("Continue",'unescaped'),array('class'=>'btn-default btn-block btn','id'=>'register','name'=>'register')); ?>
         </div>
