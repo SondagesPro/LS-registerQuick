@@ -7,7 +7,7 @@
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 0.3.0
+ * @version 0.3.1
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,10 +112,7 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     public function newSurveySettings()
     {
         $event = $this->event;
-        foreach ($event->get('settings') as $name => $value)
-        {
-            /* In order use survey setting, if not set, use global, if not set use default */
-            //~ $default=$event->get($name,null,null,isset($this->settings[$name]['default'])?$this->settings[$name]['default']:NULL);
+        foreach ($event->get('settings') as $name => $value) {
             $this->set($name, $value, 'Survey', $event->get('survey'));
         }
     }
@@ -227,10 +224,8 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
             $aReplacement['REGISTERMESSAGE2'] = gT("You may register for this survey if you wish to take part.")."<br />\n".gT("Enter your details below, and an email containing the link to participate in this survey will be sent immediately.");
         }
 
-        //~ Yii::setPathOfAlias('registerQuick', dirname(__FILE__));
         $aReplacement['REGISTERFORM']=$this->renderPartial('registerForm',$aData,true);
-
-        //~ $aReplacement['REGISTERFORM']=Yii::app()->getController()->renderPartial('registerQuick.views.registerForm',$aData,true);
+        App()->clientScript->registerScriptFile(App()->assetManager->publish(dirname(__FILE__) ."/assets")."/registerFix.js",CClientScript::POS_END);
         $aData['thissurvey'] = $aSurveyInfo;
         Yii::app()->setConfig('surveyID',$iSurveyId);//Needed for languagechanger
         $aData['languagechanger'] = makeLanguageChangerSurvey(App()->language);
