@@ -75,9 +75,9 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
                 ),
                 'emailMultiple' => array(
                     'type'=>'select',
-                    'label'=>$this->_translate('Multiple Email'),
+                    'label'=>$this->_translate('Existing Email'),
                     'options'=>array(
-                        'getold' => $this->_translate("Get the old one."),
+                        'getold' => $this->_translate("Reload previous response."),
                         'renew'=> $this->_translate("Create a new one if already completed"),
                     ),
                     'htmlOptions'=>array(

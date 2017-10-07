@@ -1,40 +1,68 @@
+# Translation of registerQuick in French (France)
+# This file is distributed under the same license as the registerQuick package.
 msgid ""
 msgstr ""
-"Project-Id-Version: registerQuick\n"
-"POT-Creation-Date: 2017-02-22 15:41+0100\n"
-"PO-Revision-Date: 2017-02-22 15:43+0100\n"
-"Language-Team: \n"
+"PO-Revision-Date: 2017-10-07 13:06:45+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.11\n"
-"X-Poedit-Basepath: ..\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Poedit-KeywordsList: _translate\n"
-"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/2.3.1\n"
 "Language: fr\n"
-"X-Poedit-SearchPath-0: .\n"
+"Project-Id-Version: registerQuick\n"
 
-#: registerQuick.php:54
-msgid "Use quick registering"
-msgstr "Utiliser l'enregistrement rapide"
+#: registerQuick.php:80
+msgid "Reload previous response."
+msgstr "Recharger la réponse précédente."
 
-#: registerQuick.php:59
+#: registerQuick.php:78
+msgid "Existing Email"
+msgstr "Adresse existante"
+
+#: registerQuick.php:102
+msgid "Show the token form."
+msgstr "Ajouter le formulaire de jeton"
+
+#: registerQuick.php:97
+msgid "If user put an email address, the register message will be sent."
+msgstr "Si l‘utilisateur inique une adresse courriel, le message sera envoyé."
+
+#: registerQuick.php:96
+msgid "Send the email."
+msgstr "Envoyer le message courriel."
+
+#: registerQuick.php:91
+msgid "Warning: enabling reload of survey only with the e-mail address can cause privacy issue. The message will be sent if the email address exists."
+msgstr "Attention : permettre le chargement du questionnaire avec l‘adresse de courriel seulement peut entrainer des problème sur les données privées. Le message sera envoyé si l‘adresse de courriel existe."
+
+#: registerQuick.php:90
+msgid "If email exist : disable reloading survey without token."
+msgstr "Si l‘adresse existe : empêcher le chargement du questionnaire sans le jeton."
+
+#: registerQuick.php:84
+msgid "Create a new token each time."
+msgstr "Créer un nouveau jeton à chaque fois."
+
+#: registerQuick.php:81
+msgid "Create a new one if already completed"
+msgstr "Créer un nouveau jeton seulement si marqué terminé."
+
+#: registerQuick.php:72
+msgid "Validate like LimeSurvey core (default)"
+msgstr "Valider comme le fait LimeSurvey (par défaut)"
+
+#: registerQuick.php:69
+msgid "Hide and don't use it"
+msgstr "Masque et ne pas l'utiliser"
+
+#: registerQuick.php:68
+msgid "Shown but allow empty"
+msgstr "Montre mais permet vide"
+
+#: registerQuick.php:66
 msgid "Email settings"
 msgstr "Paramètres de courriel"
 
 #: registerQuick.php:61
-msgid "Shown but allow empty"
-msgstr "Montre mais permet vide"
-
-#: registerQuick.php:62
-msgid "Hide and don't use it"
-msgstr "Masque et ne pas l'utiliser"
-
-#: registerQuick.php:65
-msgid "Validate like LimeSurvey core (default)"
-msgstr "Valider comme le fait LimeSurvey (par défaut)"
-
-#: registerQuick.php:71
-msgid "Send the email (if exist)."
-msgstr "Envoyer le courriel (si il existe)"
+msgid "Use quick registering"
+msgstr "Utiliser l'enregistrement rapide"

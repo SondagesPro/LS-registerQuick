@@ -1,7 +1,8 @@
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: registerQuick\n"
-"POT-Creation-Date: 2017-02-22 15:36+0100\n"
+"POT-Creation-Date: 2017-10-07 15:06+0200\n"
 "PO-Revision-Date: 2017-02-22 15:40+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -9,32 +10,64 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 2.0.3\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-KeywordsList: _translate\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: registerQuick.php:54
+#: registerQuick.php:61
 msgid "Use quick registering"
 msgstr ""
 
-#: registerQuick.php:59
+#: registerQuick.php:66
 msgid "Email settings"
 msgstr ""
 
-#: registerQuick.php:61
+#: registerQuick.php:68
 msgid "Shown but allow empty"
 msgstr ""
 
-#: registerQuick.php:62
+#: registerQuick.php:69
 msgid "Hide and don't use it"
 msgstr ""
 
-#: registerQuick.php:65
+#: registerQuick.php:72
 msgid "Validate like LimeSurvey core (default)"
 msgstr ""
 
-#: registerQuick.php:71
-msgid "Send the email (if exist)."
+#: registerQuick.php:78
+msgid "Existing Email"
+msgstr ""
+
+#: registerQuick.php:80
+msgid "Reload previous response."
+msgstr ""
+
+#: registerQuick.php:81
+msgid "Create a new one if already completed"
+msgstr ""
+
+#: registerQuick.php:84
+msgid "Create a new token each time."
+msgstr ""
+
+#: registerQuick.php:90
+msgid "If email exist : disable reloading survey without token."
+msgstr ""
+
+#: registerQuick.php:91
+msgid "Warning: enabling reload of survey only with the e-mail address can cause privacy issue. The message will be sent if the email address exists."
+msgstr ""
+
+#: registerQuick.php:96
+msgid "Send the email."
+msgstr ""
+
+#: registerQuick.php:97
+msgid "If user put an email address, the register message will be sent."
+msgstr ""
+
+#: registerQuick.php:102
+msgid "Show the token form."
 msgstr ""
