@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: registerQuick\n"
-"POT-Creation-Date: 2017-10-07 15:06+0200\n"
+"POT-Creation-Date: 2017-10-07 15:26+0200\n"
 "PO-Revision-Date: 2017-02-22 15:40+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -53,11 +53,11 @@ msgid "Create a new token each time."
 msgstr ""
 
 #: registerQuick.php:90
-msgid "If email exist : disable reloading survey without token."
+msgid "Privacy of response"
 msgstr ""
 
 #: registerQuick.php:91
-msgid "Warning: enabling reload of survey only with the e-mail address can cause privacy issue. The message will be sent if the email address exists."
+msgid "If email exist : disable reloading survey without token. Warning: enabling reload of survey only with the e-mail address can cause privacy issue. The message will be sent if the email address exists."
 msgstr ""
 
 #: registerQuick.php:96

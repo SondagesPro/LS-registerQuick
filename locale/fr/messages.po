@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the registerQuick package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-10-07 13:06:45+0000\n"
+"PO-Revision-Date: 2017-10-07 13:30:40+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,14 @@ msgstr ""
 "X-Generator: GlotPress/2.3.1\n"
 "Language: fr\n"
 "Project-Id-Version: registerQuick\n"
+
+#: registerQuick.php:91
+msgid "If email exist : disable reloading survey without token. Warning: enabling reload of survey only with the e-mail address can cause privacy issue. The message will be sent if the email address exists."
+msgstr "Si l‘adresse courriel existe : empêcher le rechargement des réponses sans le code d‘invitation. Attention : permettre le rechargement des réponses avec seulement l‘adresse de courriel peut entrainer des problèmes sur les données privées. Les message d‘enregistrement sera envoyé si l‘adresse de courriel existe."
+
+#: registerQuick.php:90
+msgid "Privacy of response"
+msgstr "Confidentialité de la réponse"
 
 #: registerQuick.php:80
 msgid "Reload previous response."
@@ -30,14 +38,6 @@ msgstr "Si l‘utilisateur inique une adresse courriel, le message sera envoyé.
 #: registerQuick.php:96
 msgid "Send the email."
 msgstr "Envoyer le message courriel."
-
-#: registerQuick.php:91
-msgid "Warning: enabling reload of survey only with the e-mail address can cause privacy issue. The message will be sent if the email address exists."
-msgstr "Attention : permettre le chargement du questionnaire avec l‘adresse de courriel seulement peut entrainer des problème sur les données privées. Le message sera envoyé si l‘adresse de courriel existe."
-
-#: registerQuick.php:90
-msgid "If email exist : disable reloading survey without token."
-msgstr "Si l‘adresse existe : empêcher le chargement du questionnaire sans le jeton."
 
 #: registerQuick.php:84
 msgid "Create a new token each time."

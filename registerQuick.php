@@ -7,7 +7,7 @@
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 0.3.1
+ * @version 0.3.2
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,8 +87,8 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
                 ),
                 'emailSecurity'=>array(
                     'type'=>'boolean',
-                    'label'=>$this->_translate('If email exist : disable reloading survey without token.'),
-                    'help'=>$this->_translate("Warning: enabling reload of survey only with the e-mail address can cause privacy issue. The message will be sent if the email address exists."),
+                    'label'=>$this->_translate('Privacy of response'),
+                    'help'=>$this->_translate("If email exist : disable reloading survey without token. Warning: enabling reload of survey only with the e-mail address can cause privacy issue. The message will be sent if the email address exists."),
                     'current'=>$this->get('emailSecurity','Survey',$oEvent->get('survey'),1)
                 ),
                 'emailSend'=>array(
