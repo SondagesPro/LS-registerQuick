@@ -7,7 +7,7 @@
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 0.3.2
+ * @version 0.3.3
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -124,7 +124,6 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     {
         $iSurveyId=$this->getEvent()->get('surveyid');
         $this->language = App()->language;
-
         if($this->get('quickRegistering','Survey',$iSurveyId)){
             /* Control survey access and Fix langage according to survey @see https://bugs.limesurvey.org/view.php?id=12641 */
             $oSurvey=Survey::model()->findByPK($iSurveyId);
@@ -185,6 +184,7 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     {
         Yii::import('application.controllers.RegisterController');
         $RegisterController= new RegisterController('register');
+        App()->setLanguage($this->language);
         $sLanguage=App()->language;
         $aSurveyInfo=getSurveyInfo($iSurveyId,$sLanguage);
         $aFieldValue=$RegisterController->getFieldValue($iSurveyId);
@@ -310,9 +310,9 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     * @return array of errors when try to register (empty array => no error)
     */
     private function _getRegisterErrors($iSurveyId){
+        App()->setLanguage($this->language);
         $aSurveyInfo=getSurveyInfo($iSurveyId,App()->language);
         $aRegisterErrors=array();
-
         // Check the security question's answer
         if (function_exists("ImageCreate") && isCaptchaEnabled('registrationscreen',$aSurveyInfo['usecaptcha']) ) {
             $sLoadSecurity=Yii::app()->request->getPost('loadsecurity','');
@@ -325,6 +325,7 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
         }
         Yii::import('application.controllers.RegisterController');
         $RegisterController= new RegisterController('register');
+        App()->setLanguage($this->language);
         $aFieldValue=$RegisterController->getFieldValue($iSurveyId);
         $aRegisterAttributes=$RegisterController->getExtraAttributeInfo($iSurveyId);
 

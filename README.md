@@ -1,6 +1,6 @@
 # registerQuick :replace default register system by a quickest way.. #
 
-If survey have token and register is activated, allow admin user to choose some enabke user to be redirect to the survey with the new token just after registerinh
+If survey have token and register is activated, allow admin user to enable new registered participants to be redirect to the survey with the new token after registering.
 
 ## Installation
 
