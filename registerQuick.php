@@ -3,11 +3,11 @@
  * Plugin helper for limesurvey : quick render a message to public user
  *
  * @author Denis Chenu <denis@sondages.pro>
- * @copyright 2017 Denis Chenu <http://www.sondages.pro>
+ * @copyright 2018 Denis Chenu <http://www.sondages.pro>
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 0.3.3
+ * @version 1.0.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,27 +19,71 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-class registerQuick extends \ls\pluginmanager\PluginBase {
+class registerQuick extends PluginBase {
 
     protected $storage = 'DbStorage';
 
     static protected $description = 'Quick register system, replace default register system by a quickest way.';
     static protected $name = 'registerQuick';
 
-    /**
-     * @var string langage to be used (and reseted) during all event
-     * @see https://bugs.limesurvey.org/view.php?id=12652
-     */
-    private $language;
 
     public function init()
     {
+        if(!$this->_canBeUsed()) {
+            return;
+        }
+        $this->subscribe('beforeActivate');
+
         $this->subscribe('beforeSurveySettings');
         $this->subscribe('newSurveySettings');
 
         $this->subscribe('beforeRegisterForm');
         $this->subscribe('beforeRegister');
 
+        /* This need twigExtendByPlugins */
+        $this->subscribe('getPluginTwigPath');
+
+    }
+
+    /**
+     * test if this plugin can be used, log as error and as vardump if not able
+     * @return boolean
+     */
+    private function _canBeUsed()
+    {
+        $lsVersion = intval(Yii::app()->getConfig('versionnumber'));
+        if($lsVersion < 3) {
+            $this->log("Only for LimeSurvey 3.0.0 and up version",'error');
+            return false;
+        }
+        $oTwigExtendByPlugins = Plugin::model()->find("name=:name",array(":name"=>'twigExtendByPlugins'));
+        if(!$oTwigExtendByPlugins) {
+            $this->log("You must download twigExtendByPlugins plugin");
+            return false;
+        } elseif(!$oTwigExtendByPlugins->active) {
+            $this->log("You must activate twigExtendByPlugins plugin");
+            return false;
+        }
+        return true;
+    }
+    /**
+     * Activate or not
+     */
+    public function beforeActivate()
+    {
+        $lsVersion = intval(Yii::app()->getConfig('versionnumber'));
+        if($lsVersion < 3) {
+            $this->getEvent()->set('message', gT("Only for LimeSurvey 3.0.0 and up version"));
+            $this->getEvent()->set('success', false);
+        }
+        $oTwigExtendByPlugins = Plugin::model()->find("name=:name",array(":name"=>'twigExtendByPlugins'));
+        if(!$oTwigExtendByPlugins) {
+            $this->getEvent()->set('message', gT("You must download twigExtendByPlugins plugin"));
+            $this->getEvent()->set('success', false);
+        } elseif(!$oTwigExtendByPlugins->active) {
+            $this->getEvent()->set('message', gT("You must activate twigExtendByPlugins plugin"));
+            $this->getEvent()->set('success', false);
+        }
     }
 
     /**
@@ -58,48 +102,48 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
             'settings' => array(
                 'quickRegistering'=>array(
                     'type'=>'boolean',
-                    'label'=>$this->_translate('Use quick registering'),
+                    'label'=>$this->gT('Use quick registering'),
                     'current'=>$this->get('quickRegistering','Survey',$oEvent->get('survey'),0)
                 ),
                 'emailValidation'=>array(
                     'type'=>'select',
-                    'label'=>$this->_translate('Email settings'),
+                    'label'=>$this->gT('Email settings'),
                     'options'=>array(
-                            'show'=>$this->_translate("Shown but allow empty"),
-                            'hide'=>$this->_translate("Hide and don't use it"),
+                            'show'=>$this->gT("Shown but allow empty"),
+                            'hide'=>$this->gT("Hide and don't use it"),
                         ),
                     'htmlOptions'=>array(
-                        'empty'=>$this->_translate("Validate like LimeSurvey core (default)"),
+                        'empty'=>$this->gT("Validate like LimeSurvey core (default)"),
                     ),
                     'current'=>$this->get('emailValidation','Survey',$oEvent->get('survey'),"")
                 ),
                 'emailMultiple' => array(
                     'type'=>'select',
-                    'label'=>$this->_translate('Existing Email'),
+                    'label'=>$this->gT('Existing Email'),
                     'options'=>array(
-                        'getold' => $this->_translate("Reload previous response."),
-                        'renew'=> $this->_translate("Create a new one if already completed"),
+                        'getold' => $this->gT("Reload previous response."),
+                        'renew'=> $this->gT("Create a new one if already completed"),
                     ),
                     'htmlOptions'=>array(
-                        'empty'=>$this->_translate("Create a new token each time."),
+                        'empty'=>$this->gT("Create a new token each time."),
                     ),
                     'current'=>$this->get('emailMultiple','Survey',$oEvent->get('survey'),"")
                 ),
                 'emailSecurity'=>array(
                     'type'=>'boolean',
-                    'label'=>$this->_translate('Privacy of response'),
-                    'help'=>$this->_translate("If email exist : disable reloading survey without token. Warning: enabling reload of survey only with the e-mail address can cause privacy issue. The message will be sent if the email address exists."),
+                    'label'=>$this->gT('Privacy of response'),
+                    'help'=>$this->gT("If email exist : disable reloading survey without token. Warning: enabling reload of survey only with the e-mail address can cause privacy issue. The message will be sent if the email address exists."),
                     'current'=>$this->get('emailSecurity','Survey',$oEvent->get('survey'),1)
                 ),
                 'emailSend'=>array(
                     'type'=>'boolean',
-                    'label'=>$this->_translate('Send the email.'),
-                    'help'=>$this->_translate("If user put an email address, the register message will be sent."),
+                    'label'=>$this->gT('Send the email.'),
+                    'help'=>$this->gT("If user put an email address, the register message will be sent."),
                     'current'=>$this->get('emailSend','Survey',$oEvent->get('survey'),0)
                 ),
                 'showTokenForm'=>array(
                     'type'=>'boolean',
-                    'label'=>$this->_translate('Show the token form.'),
+                    'label'=>$this->gT('Show the token form.'),
                     'current'=>$this->get('showTokenForm','Survey',$oEvent->get('survey'),0)
                 ),
             )
@@ -123,8 +167,8 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     public function beforeRegister()
     {
         $iSurveyId=$this->getEvent()->get('surveyid');
-        $this->language = App()->language;
         if($this->get('quickRegistering','Survey',$iSurveyId)){
+            
             /* Control survey access and Fix langage according to survey @see https://bugs.limesurvey.org/view.php?id=12641 */
             $oSurvey=Survey::model()->findByPK($iSurveyId);
             if (!$oSurvey) {
@@ -134,15 +178,13 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
             } elseif(!is_null($oSurvey->expires) && $oSurvey->expires < dateShift(date("Y-m-d H:i:s"), "Y-m-d H:i", Yii::app()->getConfig('timeadjust'))) {
                 $this->redirect(array('survey/index','sid'=>$iSurveyId,'lang'=>$sLanguage));
             }
-            if(!in_array(App()->language,$oSurvey->getAllLanguages())) {
-                Yii::app()->setLanguage($oSurvey->language);
-                $this->language = App()->language;
-            }
+            $this->_fixLanguage($iSurveyId);
             if((Yii::app()->request->getPost('register'))){
                 $this->_validateForm($iSurveyId);
             }
         }
     }
+
     /**
     * @see beforeRegisterForm
     */
@@ -150,11 +192,17 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     {
         $iSurveyId=$this->getEvent()->get('surveyid');
         if($this->get('quickRegistering','Survey',$iSurveyId)){
-            Yii::app()->setLanguage($this->language);
             $this->getEvent()->set('registerForm',$this->_getRegisterForm($iSurveyId));
         }
     }
 
+    public function getPluginTwigPath()
+    {
+        $viewPath = dirname(__FILE__)."/views";
+        $this->getEvent()->append('TwigExtendOption', array($viewPath));
+        $this->getEvent()->append('TwigExtendForced', array($viewPath));
+
+    }
     /**
      * Validate the register form and do action if needed
      * @param integer $iSurveyId
@@ -174,6 +222,7 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
         }
     }
 
+
     /**
      * Construct the new form with option
      * @see RegisterController->getRegisterForm()
@@ -182,56 +231,23 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
      */
     private function _getRegisterForm($iSurveyId)
     {
+        $this->unsubscribe('beforeRegisterForm');
         Yii::import('application.controllers.RegisterController');
         $RegisterController= new RegisterController('register');
-        App()->setLanguage($this->language);
-        $sLanguage=App()->language;
-        $aSurveyInfo=getSurveyInfo($iSurveyId,$sLanguage);
-        $aFieldValue=$RegisterController->getFieldValue($iSurveyId);
-        $aRegisterAttributes=$RegisterController->getExtraAttributeInfo($iSurveyId);
-
-        $aData['iSurveyId'] = $iSurveyId;
-        $aData['sLanguage'] = App()->language;
-        $aData['sFirstName'] = $aFieldValue['sFirstName'];
-        $aData['sLastName'] = $aFieldValue['sLastName'];
-        $aData['sEmail'] = $aFieldValue['sEmail'];
-        $aData['aAttribute'] = $aFieldValue['aAttribute'];
-        $aData['aExtraAttributes']=$aRegisterAttributes;
-        $aData['urlAction']=App()->createUrl('register/index',array('sid'=>$iSurveyId));
-        $aData['bCaptcha'] = function_exists("ImageCreate") && isCaptchaEnabled('registrationscreen', $aSurveyInfo['usecaptcha']);
-        /* Show hide email part */
+        $this->_fixLanguage($iSurveyId);
+        $aRegisterFormInfo = $RegisterController->getRegisterForm($iSurveyId); // Here come a array, not a form
         $emailValidation=$this->get('emailValidation','Survey',$iSurveyId,'');
-        $aData['showEmail']=(empty($emailValidation) || $emailValidation=='show');
-        $aData['requiredEmail']=($emailValidation=='');
-        $aData['showTokenForm']=$this->get('showTokenForm','Survey',$iSurveyId,'');
-        // Must control token form too …
-        if($aData['showTokenForm']) {
-            $aData['urlToken']=App()->createUrl('survey/index',array('sid'=>$iSurveyId));
+        $aRegisterFormInfo['showEmail'] = (empty($emailValidation) || $emailValidation=='show');
+        $aRegisterFormInfo['requiredEmail'] = ($emailValidation=='');
+        /* Complete by register errors */
+        if(App()->getRequest()->getPost('register')) {
+            $registerErrors = $this->_getRegisterErrors($iSurveyId);
+            $aRegisterFormInfo['aErrors'] = $registerErrors;
         }
-        if(!empty($this->_aRegisterError)) {
-            $sRegisterError="<div class='alert alert-danger' role='alert'>"
-            .implode('<br />',$this->_aRegisterError)
-            ."</div>";
-        } else {
-            $sRegisterError='';
-        }
-
-        $aReplacement['REGISTERERROR'] = $sRegisterError;
-        $aReplacement['REGISTERMESSAGE1'] = gT("You must be registered to complete this survey");
-        if($sStartDate=$RegisterController->getStartDate($iSurveyId)) {
-            $aReplacement['REGISTERMESSAGE2'] = sprintf(gT("You may register for this survey but you have to wait for the %s before starting the survey."),$sStartDate)."<br />\n".gT("Enter your details below, and an email containing the link to participate in this survey will be sent immediately.");
-        } else {
-            $aReplacement['REGISTERMESSAGE2'] = gT("You may register for this survey if you wish to take part.")."<br />\n".gT("Enter your details below, and an email containing the link to participate in this survey will be sent immediately.");
-        }
-
-        $aReplacement['REGISTERFORM']=$this->renderPartial('registerForm',$aData,true);
-        App()->clientScript->registerScriptFile(App()->assetManager->publish(dirname(__FILE__) ."/assets")."/registerFix.js",CClientScript::POS_END);
-        $aData['thissurvey'] = $aSurveyInfo;
-        Yii::app()->setConfig('surveyID',$iSurveyId);//Needed for languagechanger
-        $aData['languagechanger'] = makeLanguageChangerSurvey(App()->language);
-        $oTemplate = Template::model()->getInstance(null, $iSurveyId);
-        return templatereplace(file_get_contents($oTemplate->viewPath . "/register.pstpl"),$aReplacement,$aData);
-
+        $aRegisterFormInfo['options']['ajaxmode'] = "off";/* Seem to be replaced after, then adding a script in twig file */
+        $aRegisterFormInfo['surveyls_title'] = sprintf($this->gT("Registering to : %s"),"The survey title");
+        
+        return $aRegisterFormInfo;
     }
 
     /**
@@ -242,9 +258,8 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     private function _getTokenId($iSurveyId){
         Yii::import('application.controllers.RegisterController');
         $RegisterController= new RegisterController('register');
-        Yii::app()->setLanguage($this->language);
-        $sLanguage=App()->language;
-        $aSurveyInfo=getSurveyInfo($iSurveyId,$sLanguage);
+        $this->_fixLanguage($iSurveyId);
+        $aSurveyInfo=getSurveyInfo($iSurveyId,App()->getLanguage());
         $aFieldValue=$RegisterController->getFieldValue($iSurveyId);
         if($aFieldValue['sEmail']!="" && $this->get('emailMultiple','Survey',$iSurveyId)) {
             $oToken=Token::model($iSurveyId)->findByAttributes(array('email' => $aFieldValue['sEmail']));
@@ -259,12 +274,12 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
                             $this->_aRegisterError[]=gT("The email address you have entered is already registered and the survey has been completed.");
                     }
                 } elseif(strtolower(substr(trim($oToken->emailstatus),0,6))==="optout") {
-                    $this->_aRegisterError[]=gT("This email address cannot be used because it was opted out of this survey.");
+                    $this->_aRegisterError[]=$this->gT("This email address cannot be used because it was opted out of this survey.");
                 } elseif(!$oToken->emailstatus && $oToken->emailstatus!="OK") {
-                    $this->_aRegisterError[]=gT("This email address is already registered but the email adress was bounced.");
+                    $this->_aRegisterError[]=$this->gT("This email address is already registered but the email adress was bounced.");
                 } elseif($aSurveyInfo['alloweditaftercompletion']=='Y' || $oToken->usesleft > 0) {
                     if($this->get('emailSecurity','Survey',$iSurveyId,1)) {
-                        $this->_aRegisterError[]=gT("This email address is already registered, entering in survey is only allowed with token.");
+                        $this->_aRegisterError[]=$this->gT("This email address is already registered, entering in survey is only allowed with token.");
                         $this->_sendRegistrationEmail($iSurveyId,$oToken->tid);
                     }
                 }
@@ -300,7 +315,6 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
         Yii::import('application.controllers.RegisterController');
         $RegisterController= new RegisterController('register');
         $done =$RegisterController->sendRegistrationEmail($iSurveyId,$iTokenId);
-        Yii::app()->setLanguage($this->language);
         return $done;
     }
     /**
@@ -310,7 +324,6 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     * @return array of errors when try to register (empty array => no error)
     */
     private function _getRegisterErrors($iSurveyId){
-        App()->setLanguage($this->language);
         $aSurveyInfo=getSurveyInfo($iSurveyId,App()->language);
         $aRegisterErrors=array();
         // Check the security question's answer
@@ -325,7 +338,7 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
         }
         Yii::import('application.controllers.RegisterController');
         $RegisterController= new RegisterController('register');
-        App()->setLanguage($this->language);
+        $this->_fixLanguage($iSurveyId);
         $aFieldValue=$RegisterController->getFieldValue($iSurveyId);
         $aRegisterAttributes=$RegisterController->getExtraAttributeInfo($iSurveyId);
 
@@ -353,35 +366,35 @@ class registerQuick extends \ls\pluginmanager\PluginBase {
     private function _redirectToToken($iSurveyId,$iTokenId){
         $oToken = Token::model($iSurveyId)->findByPk($iTokenId);
         $sToken=$oToken->token;
-        Yii::app()->setLanguage($this->language);
         $sLanguage=App()->language;
-        $redirectUrl=App()->createUrl("/survey/index/",array('sid'=>$iSurveyId,'lang'=>$sLanguage,'token'=>$sToken,'newtest'=>'Y'));
+        $redirectUrl = App()->createUrl("/survey/index/",array('sid'=>$iSurveyId,'lang'=>$sLanguage,'token'=>$sToken,'newtest'=>'Y'));
+        Yii::app()->getController()->redirect($redirectUrl);
+        Yii::app()->end();
+    }
 
-        Yii::app()->getRequest()->redirect($redirectUrl);
-    }
     /**
-     * Translate a internal string
-     * @param string $string
-     * @return string
+     * Log message
+     * @return void
      */
-    private function _translate($string){
-        return Yii::t('',$string,array(),'registerQuick');
+    public function log($message, $level = \CLogger::LEVEL_TRACE)
+    {
+        parent::log($message, $level);
+        Yii::log("[".get_class($this)."] ".$message, $level, 'vardump');
     }
+
     /**
-     * Add this translation just after loaded all plugins
-     * @see event afterPluginLoad
+     * fix the language
+     * @param $iSurveyId
+     * @return void
      */
-    public function afterPluginLoad(){
-        // messageSource for this plugin:
-        $registerQuickMode=array(
-            'class' => 'CGettextMessageSource',
-            'cacheID' => 'registerQuickLang',
-            'cachingDuration'=>3600,
-            'forceTranslation' => true,
-            'useMoFile' => true,
-            'basePath' => __DIR__ . DIRECTORY_SEPARATOR.'locale',
-            'catalog'=>'messages',// default from Yii
-        );
-        Yii::app()->setComponent('registerQuick',$registerQuickMode);
+    private function _fixLanguage($iSurveyId)
+    {
+        $oSurvey = Survey::model()->findByPk($iSurveyId);
+        $language = $oSurvey->language;
+        $userLanguage = App()->getRequest()->getParam('lang',App()->getRequest()->getPost('lang'));
+        if(in_array($userLanguage,$oSurvey->getAllLanguages()) ) {
+            $language = $userLanguage;
+        }
+        App()->setLanguage($language);
     }
 }
