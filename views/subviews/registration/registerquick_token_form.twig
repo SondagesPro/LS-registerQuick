@@ -1,0 +1,32 @@
+{#
+    This is the registration form for participant registration on a survey.
+    Copy of LimeSUrvey vanilla template with aSurveyInfo.requiredEmail and aSurveyInfo.showEmail usage
+#}
+
+<div class="{{ aSurveyInfo.class.registerform }} clearfix" {{ aSurveyInfo.attr.registerform }}>
+    {{ C.Html.form(aSurveyInfo.sUrveyUrl,'post',({'id' : 'token', 'role' : 'form', 'class' : 'form row'})) }}
+    <p class='well text-info'>
+        {{ gT("If you have been issued a token, please enter it in the box below and click continue.") }}
+    </p>
+    <div class='{{ aSurveyInfo.class.registerformcol }} col-md-8 col-md-offset-2' {{ aSurveyInfo.attr.registerformcol }}>
+        {# Token #}
+        <div class='{{ aSurveyInfo.class.registerformcolrow }} form-group row' {{ aSurveyInfo.attr.registerformcolrow }}>
+            <label for='token' class='{{ aSurveyInfo.class.registerformcolrowlabel }} control-label '>{{ gT("Token:") }}</label>
+            <div class="">
+                {{ C.Html.passwordField('token', "", ({'id' : 'token', 'class' : 'form-control', 'required' : true })) }}
+            </div>
+        </div>
+        {# TODO : add captcha if needed #}
+
+        {# Token button #}
+        <div class='{{ aSurveyInfo.class.registersave }} form-group row' {{ aSurveyInfo.attr.registersave }} >
+            <div class='{{ aSurveyInfo.class.registersavediv }} col-md-offset-7' {{ aSurveyInfo.attr.registersavediv }} >
+                {% set continue = gT("Continue",'unescaped') %}
+                <button {{ aSurveyInfo.attr.registersavedivbutton }}  class='{{ aSurveyInfo.class.registersavedivbutton }} btn btn-default' >
+                    {{ continue }}
+                </button>
+            </div>
+        </div>
+    </div>
+    {{ C.Html.endForm }}
+</div>

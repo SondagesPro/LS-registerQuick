@@ -37,6 +37,7 @@ Translation are managed on <https://translate.sondages.pro>, you must register b
 If you language is not available, open a issue on [gitlab](https://gitlab.com/SondagesPro/registerQuick).
 
 ## Home page & Copyright
+
 - HomePage <http://extensions.sondages.pro/>
 - Copyright © 2017-2018 Denis Chenu <http://sondages.pro>
 - Copyright © 2017 SICODA GmbH <http://www.sicoda.de>

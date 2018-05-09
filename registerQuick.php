@@ -7,7 +7,7 @@
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 1.0.0
+ * @version 1.1.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -239,14 +239,16 @@ class registerQuick extends PluginBase {
         $emailValidation=$this->get('emailValidation','Survey',$iSurveyId,'');
         $aRegisterFormInfo['showEmail'] = (empty($emailValidation) || $emailValidation=='show');
         $aRegisterFormInfo['requiredEmail'] = ($emailValidation=='');
+        $aRegisterFormInfo['showTokenForm'] = (bool) $this->get('showTokenForm','Survey',$iSurveyId,0);
+        $aRegisterFormInfo['surveyUrl'] = App()->createUrl("/survey/index/",array('sid'=>$iSurveyId,'lang'=>App()->getLanguage()));;
+
         /* Complete by register errors */
         if(App()->getRequest()->getPost('register')) {
             $registerErrors = $this->_getRegisterErrors($iSurveyId);
             $aRegisterFormInfo['aErrors'] = $registerErrors;
         }
         $aRegisterFormInfo['options']['ajaxmode'] = "off";/* Seem to be replaced after, then adding a script in twig file */
-        $aRegisterFormInfo['surveyls_title'] = sprintf($this->gT("Registering to : %s"),"The survey title");
-        
+        $aRegisterFormInfo['surveyls_title'] = sprintf($this->gT("Registering to : %s"),Survey::model()->findByPk($iSurveyId)->getLocalizedTitle());
         return $aRegisterFormInfo;
     }
 
@@ -310,11 +312,15 @@ class registerQuick extends PluginBase {
     /**
      * Send the registration email
      * @see RegisterController->sendRegistrationEmail();
+     * @param integer $iSureyId
+     * @param integer $iTokenId
+     * @return boolean 
      */
     private function _sendRegistrationEmail($iSurveyId,$iTokenId){
         Yii::import('application.controllers.RegisterController');
-        $RegisterController= new RegisterController('register');
-        $done =$RegisterController->sendRegistrationEmail($iSurveyId,$iTokenId);
+        $RegisterController = new RegisterController('register');
+        $this->_fixLanguage($iSurveyId);
+        $done = $RegisterController->sendRegistrationEmail($iSurveyId,$iTokenId);
         return $done;
     }
     /**
