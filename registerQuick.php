@@ -7,7 +7,7 @@
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 1.1.0
+ * @version 1.1.1
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -402,5 +402,14 @@ class registerQuick extends PluginBase {
             $language = $userLanguage;
         }
         App()->setLanguage($language);
+    }
+
+    /**
+     * @inheritdoc
+     * With default escape mode to 'unescaped'
+     */
+    public function gT($sToTranslate, $sEscapeMode = 'unescaped', $sLanguage = null)
+    {
+        return parent::gT($sToTranslate, $sEscapeMode, $sLanguage);
     }
 }
