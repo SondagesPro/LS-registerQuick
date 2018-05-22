@@ -199,9 +199,9 @@ class registerQuick extends PluginBase {
     public function getPluginTwigPath()
     {
         $viewPath = dirname(__FILE__)."/views";
+        $forcedPath = dirname(__FILE__)."/forced";
         $this->getEvent()->append('TwigExtendOption', array($viewPath));
-        $this->getEvent()->append('TwigExtendForced', array($viewPath));
-
+        $this->getEvent()->append('TwigExtendForced', array($forcedPath));
     }
     /**
      * Validate the register form and do action if needed
@@ -403,7 +403,7 @@ class registerQuick extends PluginBase {
         }
         App()->setLanguage($language);
     }
-
+    
     /**
      * @inheritdoc
      * With default escape mode to 'unescaped'
