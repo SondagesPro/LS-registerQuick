@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin helper for limesurvey : quick render a message to public user
+ * Alternative solution for registering
  *
  * @author Denis Chenu <denis@sondages.pro>
  * @copyright 2018 Denis Chenu <http://www.sondages.pro>
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 1.1.1
+ * @version 1.2.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,8 @@ class registerQuick extends PluginBase {
         $this->subscribe('beforeRegisterForm');
         $this->subscribe('beforeRegister');
 
-        /* This need twigExtendByPlugins */
         $this->subscribe('getPluginTwigPath');
+        $this->subscribe('getValidScreenFiles');
 
     }
 
@@ -51,17 +51,20 @@ class registerQuick extends PluginBase {
      */
     private function _canBeUsed()
     {
-        $lsVersion = intval(Yii::app()->getConfig('versionnumber'));
+        $lsVersion = floatval(Yii::app()->getConfig('versionnumber'));
+        if($lsVersion > 3.9) { /* Must use > 3.9 in reality */
+            return true;
+        }
         if($lsVersion < 3) {
             $this->log("Only for LimeSurvey 3.0.0 and up version",'error');
             return false;
         }
         $oTwigExtendByPlugins = Plugin::model()->find("name=:name",array(":name"=>'twigExtendByPlugins'));
         if(!$oTwigExtendByPlugins) {
-            $this->log("You must download twigExtendByPlugins plugin");
+            $this->log("You must download twigExtendByPlugins plugin",'error');
             return false;
         } elseif(!$oTwigExtendByPlugins->active) {
-            $this->log("You must activate twigExtendByPlugins plugin");
+            $this->log("You must activate twigExtendByPlugins plugin",'error');
             return false;
         }
         return true;
@@ -71,7 +74,10 @@ class registerQuick extends PluginBase {
      */
     public function beforeActivate()
     {
-        $lsVersion = intval(Yii::app()->getConfig('versionnumber'));
+        $lsVersion = floatval(Yii::app()->getConfig('versionnumber'));
+        if($lsVersion > 3.9) {
+            return;
+        }
         if($lsVersion < 3) {
             $this->getEvent()->set('message', gT("Only for LimeSurvey 3.0.0 and up version"));
             $this->getEvent()->set('success', false);
@@ -202,6 +208,22 @@ class registerQuick extends PluginBase {
         $forcedPath = dirname(__FILE__)."/forced";
         $this->getEvent()->append('TwigExtendOption', array($viewPath));
         $this->getEvent()->append('TwigExtendForced', array($forcedPath));
+        $this->getEvent()->append('add', array($viewPath));
+        $this->getEvent()->append('replace', array($forcedPath));
+    }
+
+    public function getValidScreenFiles()
+    {
+        if(
+            $this->getEvent()->get("type")!='view' ||
+            ($this->getEvent()->get("screen") && $this->getEvent()->get("screen")!="register")
+        ){
+            return;
+        }
+        if($this->getEvent()->get("screen")) {
+            $this->getEvent()->append('remove', array("subviews/registration/register_form.twig"));
+        }
+        $this->getEvent()->append('add', array("subviews/registration/registerquick_form.twig","subviews/registration/registerquick_token_form.twig"));
     }
     /**
      * Validate the register form and do action if needed
@@ -384,7 +406,9 @@ class registerQuick extends PluginBase {
      */
     public function log($message, $level = \CLogger::LEVEL_TRACE)
     {
-        parent::log($message, $level);
+        if(is_callable("parent::log")) {
+            parent::log($message, $level);
+        }
         Yii::log("[".get_class($this)."] ".$message, $level, 'vardump');
     }
 
