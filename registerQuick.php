@@ -7,7 +7,7 @@
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 1.2.0
+ * @version 1.2.1
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,9 @@ class registerQuick extends PluginBase {
      */
     private function _canBeUsed()
     {
-        $lsVersion = floatval(Yii::app()->getConfig('versionnumber'));
-        if($lsVersion > 3.9) { /* Must use > 3.9 in reality */
+        $lsVersion = Yii::app()->getConfig('versionnumber');
+        $alsVersion = array_replace(array(0,0,0),explode(".",$lsVersion));
+        if($alsVersion[0] >= 3 && $alsVersion[1] > 9) {
             return true;
         }
         if($lsVersion < 3) {

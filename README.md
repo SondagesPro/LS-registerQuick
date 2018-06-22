@@ -6,14 +6,14 @@ If survey have token and register is activated, allow admin user to enable new r
 
 This plugin was tested on LimeSurvey 3.7.1 and can work on all version after 3.0.0.
 
-This plugin **need** [twigExtendByPlugins](https://gitlab.com/SondagesPro/registerQuick) to work.
+Before Limesurvey 3.10 version, this plugin need [twigExtendByPlugins](https://gitlab.com/SondagesPro/coreAndTools/twigExtendByPlugins) to work.
 
 ### Via GIT
 - Go to your LimeSurvey Directory
-- Clone in plugins/registerQuick directory : `git clone https://gitlab.com/SondagesPro/registerQuick.git registerQuick`
+- Clone in plugins/registerQuick directory : `git clone https://gitlab.com/SondagesPro/SurveyAccess/registerQuick.git registerQuick`
 
 ### Via ZIP dowload
-- Get the file [registerQuick.zip](http://extensions.sondages.pro/IMG/auto/registerQuick.zip)
+- Get the file [registerQuick.zip](https://extensions.sondages.pro/IMG/auto/registerQuick.zip)
 - Extract : `unzip registerQuick.zip`
 - Move the directory to plugins/ directory inside LimeSurvey
 
@@ -31,10 +31,10 @@ You just need to activate plugin like other plugin, see [Install and activate a 
 
 ## Contribute
 
-Issue and pull request are welcome on [gitlab](https://gitlab.com/SondagesPro/registerQuick).
+Issue and pull request are welcome on [gitlab](https://gitlab.com/SondagesPro/SurveyAccess/registerQuick).
 
 Translation are managed on <https://translate.sondages.pro>, you must register before update string.
-If you language is not available, open a issue on [gitlab](https://gitlab.com/SondagesPro/registerQuick).
+If you language is not available, open a issue on [gitlab](https://gitlab.com/SondagesPro/SurveyAccess/registerQuick).
 
 ## Home page & Copyright
 
