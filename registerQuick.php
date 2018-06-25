@@ -29,9 +29,6 @@ class registerQuick extends PluginBase {
 
     public function init()
     {
-        if(!$this->_canBeUsed()) {
-            return;
-        }
         $this->subscribe('beforeActivate');
 
         $this->subscribe('beforeSurveySettings');
@@ -51,7 +48,7 @@ class registerQuick extends PluginBase {
      */
     private function _canBeUsed()
     {
-        $lsVersion = Yii::app()->getConfig('versionnumber');
+        $lsVersion = floatval(Yii::app()->getConfig('versionnumber'));
         $alsVersion = array_replace(array(0,0,0),explode(".",$lsVersion));
         if($alsVersion[0] >= 3 && $alsVersion[1] > 9) {
             return true;
@@ -76,8 +73,9 @@ class registerQuick extends PluginBase {
     public function beforeActivate()
     {
         $lsVersion = floatval(Yii::app()->getConfig('versionnumber'));
-        if($lsVersion > 3.9) {
-            return;
+        $alsVersion = array_replace(array(0,0,0),explode(".",$lsVersion));
+        if($alsVersion[0] >= 3 && $alsVersion[1] > 9) {
+            return true;
         }
         if($lsVersion < 3) {
             $this->getEvent()->set('message', gT("Only for LimeSurvey 3.0.0 and up version"));
@@ -104,6 +102,18 @@ class registerQuick extends PluginBase {
     public function beforeSurveySettings()
     {
         $oEvent = $this->event;
+        if(!$this->_canBeUsed()) {
+            $oEvent->set("surveysettings.{$this->id}", array(
+                'name' => get_class($this),
+                'settings' => array(
+                    'warning'=> array(
+                        'type'=>'info',
+                        'content'=>\CHtml::tag("div",array('class'=>'alert alert-danger'),$this->gT("You can not use this plugin with your current LimeSurvey version and active plugin")),
+                    ),
+                ),
+            ));
+            return;
+        }
         $oEvent->set("surveysettings.{$this->id}", array(
             'name' => get_class($this),
             'settings' => array(
@@ -173,6 +183,9 @@ class registerQuick extends PluginBase {
      */
     public function beforeRegister()
     {
+        if(!$this->_canBeUsed()) {
+            return;
+        }
         $iSurveyId=$this->getEvent()->get('surveyid');
         if($this->get('quickRegistering','Survey',$iSurveyId)){
             
@@ -197,6 +210,9 @@ class registerQuick extends PluginBase {
     */
     public function beforeRegisterForm()
     {
+        if(!$this->_canBeUsed()) {
+            return;
+        }
         $iSurveyId=$this->getEvent()->get('surveyid');
         if($this->get('quickRegistering','Survey',$iSurveyId)){
             $this->getEvent()->set('registerForm',$this->_getRegisterForm($iSurveyId));
@@ -226,6 +242,7 @@ class registerQuick extends PluginBase {
         }
         $this->getEvent()->append('add', array("subviews/registration/registerquick_form.twig","subviews/registration/registerquick_token_form.twig"));
     }
+
     /**
      * Validate the register form and do action if needed
      * @param integer $iSurveyId
