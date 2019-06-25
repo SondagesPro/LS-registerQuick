@@ -2,9 +2,8 @@
     This is the registration form for participant registration on a survey.
     Copy of LimeSUrvey vanilla template with aSurveyInfo.requiredEmail and aSurveyInfo.showEmail usage
 #}
-
 <div class="{{ aSurveyInfo.class.registerform }} clearfix" {{ aSurveyInfo.attr.registerform }}>
-    {{ C.Html.form(aSurveyInfo.sUrveyUrl,'post',({'id' : 'token', 'role' : 'form', 'class' : 'form row'})) }}
+    {{ C.Html.form(aSurveyInfo.sUrveyUrl,'post',({'id' : 'form-token', 'role' : 'form', 'class' : 'form row'})) }}
     <p class='well text-info'>
         {{ gT("If you have been issued a token, please enter it in the box below and click continue.") }}
     </p>
