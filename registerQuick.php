@@ -3,11 +3,11 @@
  * Alternative solution for registering
  *
  * @author Denis Chenu <denis@sondages.pro>
- * @copyright 2018 Denis Chenu <http://www.sondages.pro>
+ * @copyright 2017-2020 Denis Chenu <http://www.sondages.pro>
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 1.2.1
+ * @version 1.2.2
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -335,7 +335,7 @@ class registerQuick extends PluginBase {
         $oToken->lastname = sanitize_xss_string($aFieldValue['sLastName']);
         $oToken->email = $aFieldValue['sEmail'];
         $oToken->emailstatus = 'OK';
-        $oToken->language = $sLanguage;
+        $oToken->language = App()->getLanguage();
         $aFieldValue['aAttribute']=array_map('sanitize_xss_string',$aFieldValue['aAttribute']);
         $oToken->setAttributes($aFieldValue['aAttribute']);
         if ($aSurveyInfo['startdate']) {
