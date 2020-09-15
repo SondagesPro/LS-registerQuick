@@ -7,7 +7,7 @@
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 1.2.2
+ * @version 1.2.3
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@ class registerQuick extends PluginBase {
         $this->subscribe('beforeRegisterForm');
         $this->subscribe('beforeRegister');
 
-        $this->subscribe('getPluginTwigPath');
         $this->subscribe('getValidScreenFiles');
 
     }
@@ -215,6 +214,7 @@ class registerQuick extends PluginBase {
         }
         $iSurveyId=$this->getEvent()->get('surveyid');
         if($this->get('quickRegistering','Survey',$iSurveyId)){
+            $this->subscribe('getPluginTwigPath');
             $this->getEvent()->set('registerForm',$this->_getRegisterForm($iSurveyId));
         }
     }
