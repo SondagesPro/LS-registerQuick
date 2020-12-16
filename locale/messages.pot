@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: registerQuick\n"
-"POT-Creation-Date: 2020-09-25 18:51+0200\n"
+"POT-Creation-Date: 2020-12-16 09:38+0100\n"
 "PO-Revision-Date: 2017-02-22 15:40+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -10,118 +10,118 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.4.2\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-KeywordsList: gT\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: registerQuick.php:80
+#: registerQuick.php:84
 msgid "Only for LimeSurvey 3.0.0 and up version"
 msgstr ""
 
-#: registerQuick.php:85
+#: registerQuick.php:89
 msgid "You must download twigExtendByPlugins plugin"
 msgstr ""
 
-#: registerQuick.php:88
+#: registerQuick.php:92
 msgid "You must activate twigExtendByPlugins plugin"
 msgstr ""
 
-#: registerQuick.php:110
+#: registerQuick.php:117
 msgid "You can not use this plugin with your current LimeSurvey version and active plugin"
 msgstr ""
 
-#: registerQuick.php:121
+#: registerQuick.php:128
 msgid "Use quick registering"
 msgstr ""
 
-#: registerQuick.php:126
+#: registerQuick.php:133
 msgid "Email settings"
 msgstr ""
 
-#: registerQuick.php:128
+#: registerQuick.php:135
 msgid "Shown but allow empty"
 msgstr ""
 
-#: registerQuick.php:129
+#: registerQuick.php:136
 msgid "Hide and don't use it"
 msgstr ""
 
-#: registerQuick.php:132
+#: registerQuick.php:139
 msgid "Validate like LimeSurvey core (default)"
 msgstr ""
 
-#: registerQuick.php:138
+#: registerQuick.php:145
 msgid "Existing Email"
 msgstr ""
 
-#: registerQuick.php:140
+#: registerQuick.php:147
 msgid "Reload previous response."
 msgstr ""
 
-#: registerQuick.php:141
+#: registerQuick.php:148
 msgid "Create a new one if already completed"
 msgstr ""
 
-#: registerQuick.php:144
+#: registerQuick.php:151
 msgid "Create a new token each time."
 msgstr ""
 
-#: registerQuick.php:150
+#: registerQuick.php:157
 msgid "Privacy of response"
 msgstr ""
 
-#: registerQuick.php:151
+#: registerQuick.php:158
 msgid "If email exist : disable reloading survey without token. Warning: enabling reload of survey only with the e-mail address can cause privacy issue. The message will be sent if the email address exists."
 msgstr ""
 
-#: registerQuick.php:156
+#: registerQuick.php:163
 msgid "Send the email."
 msgstr ""
 
-#: registerQuick.php:157
+#: registerQuick.php:164
 msgid "If user put an email address, the register message will be sent."
 msgstr ""
 
-#: registerQuick.php:162
+#: registerQuick.php:169
 msgid "Show the token form."
 msgstr ""
 
-#: registerQuick.php:291
+#: registerQuick.php:319
 #, php-format
 msgid "Registering to : %s"
 msgstr ""
 
-#: registerQuick.php:316
+#: registerQuick.php:344
 msgid "The email address you have entered is already registered and the survey has been completed."
 msgstr ""
 
-#: registerQuick.php:319
+#: registerQuick.php:347
 msgid "This email address cannot be used because it was opted out of this survey."
 msgstr ""
 
-#: registerQuick.php:321
+#: registerQuick.php:349
 msgid "This email address is already registered but the email adress was bounced."
 msgstr ""
 
-#: registerQuick.php:324
+#: registerQuick.php:352
 msgid "This email address is already registered, entering in survey is only allowed with token."
 msgstr ""
 
-#: registerQuick.php:382
+#: registerQuick.php:411
 msgid "Your answer to the security question was not correct - please try again."
 msgstr ""
 
-#: registerQuick.php:393
+#: registerQuick.php:422
 msgid "The email you used is not valid. Please try again."
 msgstr ""
 
-#: registerQuick.php:395
+#: registerQuick.php:424
 msgid "You must enter a valid email. Please try again."
 msgstr ""
 
-#: registerQuick.php:401
+#: registerQuick.php:430
 #, php-format
 msgid "%s cannot be left empty"
 msgstr ""
