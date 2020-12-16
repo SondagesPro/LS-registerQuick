@@ -7,7 +7,7 @@
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 1.2.3
+ * @version 1.2.4
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,11 +66,15 @@ class registerQuick extends PluginBase {
         }
         return true;
     }
+
     /**
      * Activate or not
      */
     public function beforeActivate()
     {
+        if (!$this->getEvent()) {
+            throw new CHttpException(403);
+        }
         $lsVersion = floatval(Yii::app()->getConfig('versionnumber'));
         $alsVersion = array_replace(array(0,0,0),explode(".",$lsVersion));
         if($alsVersion[0] >= 3 && $alsVersion[1] > 9) {
@@ -100,6 +104,9 @@ class registerQuick extends PluginBase {
     */
     public function beforeSurveySettings()
     {
+        if (!$this->getEvent()) {
+            throw new CHttpException(403);
+        }
         $oEvent = $this->event;
         if(!$this->_canBeUsed()) {
             $oEvent->set("surveysettings.{$this->id}", array(
@@ -171,6 +178,9 @@ class registerQuick extends PluginBase {
     */
     public function newSurveySettings()
     {
+        if (!$this->getEvent()) {
+            throw new CHttpException(403);
+        }
         $event = $this->event;
         foreach ($event->get('settings') as $name => $value) {
             $this->set($name, $value, 'Survey', $event->get('survey'));
@@ -182,6 +192,9 @@ class registerQuick extends PluginBase {
      */
     public function beforeRegister()
     {
+        if (!$this->getEvent()) {
+            throw new CHttpException(403);
+        }
         if(!$this->_canBeUsed()) {
             return;
         }
@@ -209,6 +222,9 @@ class registerQuick extends PluginBase {
     */
     public function beforeRegisterForm()
     {
+        if (!$this->getEvent()) {
+            throw new CHttpException(403);
+        }
         if(!$this->_canBeUsed()) {
             return;
         }
@@ -219,8 +235,14 @@ class registerQuick extends PluginBase {
         }
     }
 
+    /**
+     * Forced twig and new twig when register
+     */
     public function getPluginTwigPath()
     {
+        if (!$this->getEvent()) {
+            throw new CHttpException(403);
+        }
         $viewPath = dirname(__FILE__)."/views";
         $forcedPath = dirname(__FILE__)."/forced";
         $this->getEvent()->append('TwigExtendOption', array($viewPath));
@@ -229,8 +251,14 @@ class registerQuick extends PluginBase {
         $this->getEvent()->append('replace', array($forcedPath));
     }
 
+    /**
+     * For edition of twig
+     */
     public function getValidScreenFiles()
     {
+        if (!$this->getEvent()) {
+            throw new CHttpException(403);
+        }
         if(
             $this->getEvent()->get("type")!='view' ||
             ($this->getEvent()->get("screen") && $this->getEvent()->get("screen")!="register")
@@ -363,6 +391,7 @@ class registerQuick extends PluginBase {
         $done = $RegisterController->sendRegistrationEmail($iSurveyId,$iTokenId);
         return $done;
     }
+
     /**
     * Validate a register form
     * Because we need validating before default action happen
@@ -403,6 +432,7 @@ class registerQuick extends PluginBase {
         }
         return $aRegisterErrors;
     }
+
     /**
      * redirect to survey with the new token
      * @param integer $iSurveyId
