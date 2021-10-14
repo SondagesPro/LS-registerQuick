@@ -3,11 +3,11 @@
  * Alternative solution for registering
  *
  * @author Denis Chenu <denis@sondages.pro>
- * @copyright 2017-2020 Denis Chenu <http://www.sondages.pro>
+ * @copyright 2017-2021 Denis Chenu <http://www.sondages.pro>
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 1.2.4
+ * @version 1.2.5
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,12 +47,11 @@ class registerQuick extends PluginBase {
      */
     private function _canBeUsed()
     {
-        $lsVersion = floatval(Yii::app()->getConfig('versionnumber'));
-        $alsVersion = array_replace(array(0,0,0),explode(".",$lsVersion));
-        if($alsVersion[0] >= 3 && $alsVersion[1] > 9) {
+        $lsVersion = Yii::app()->getConfig('versionnumber');
+        if(version_compare($lsVersion, "3.9", ">")) {
             return true;
         }
-        if($lsVersion < 3) {
+        if(intval($lsVersion) < 3) {
             $this->log("Only for LimeSurvey 3.0.0 and up version",'error');
             return false;
         }
