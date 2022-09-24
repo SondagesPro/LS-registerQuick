@@ -3,11 +3,11 @@
  * Alternative solution for registering
  *
  * @author Denis Chenu <denis@sondages.pro>
- * @copyright 2017-2021 Denis Chenu <http://www.sondages.pro>
+ * @copyright 2017-2022 Denis Chenu <http://www.sondages.pro>
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 1.2.5
+ * @version 1.3.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@ class registerQuick extends PluginBase {
     static protected $description = 'Quick register system, replace default register system by a quickest way.';
     static protected $name = 'registerQuick';
 
+    /** @inheritdoc , none here */
+    public $allowedPublicMethods = [];
 
     public function init()
     {
@@ -42,44 +44,15 @@ class registerQuick extends PluginBase {
     }
 
     /**
-     * test if this plugin can be used, log as error and as vardump if not able
-     * @return boolean
-     */
-    private function _canBeUsed()
-    {
-        $lsVersion = Yii::app()->getConfig('versionnumber');
-        if(version_compare($lsVersion, "3.9", ">")) {
-            return true;
-        }
-        if(intval($lsVersion) < 3) {
-            $this->log("Only for LimeSurvey 3.0.0 and up version",'error');
-            return false;
-        }
-        $oTwigExtendByPlugins = Plugin::model()->find("name=:name",array(":name"=>'twigExtendByPlugins'));
-        if(!$oTwigExtendByPlugins) {
-            $this->log("You must download twigExtendByPlugins plugin",'error');
-            return false;
-        } elseif(!$oTwigExtendByPlugins->active) {
-            $this->log("You must activate twigExtendByPlugins plugin",'error');
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Activate or not
      */
     public function beforeActivate()
     {
-        if (!$this->getEvent()) {
-            throw new CHttpException(403);
-        }
         $lsVersion = floatval(Yii::app()->getConfig('versionnumber'));
-        $alsVersion = array_replace(array(0,0,0),explode(".",$lsVersion));
-        if($alsVersion[0] >= 3 && $alsVersion[1] > 9) {
+        if (version_compare($lsVersion, "3.9.0", ">")) {
             return true;
         }
-        if($lsVersion < 3) {
+        if (version_compare($lsVersion, "3.0.0", "<")) {
             $this->getEvent()->set('message', gT("Only for LimeSurvey 3.0.0 and up version"));
             $this->getEvent()->set('success', false);
         }
@@ -107,18 +80,6 @@ class registerQuick extends PluginBase {
             throw new CHttpException(403);
         }
         $oEvent = $this->event;
-        if(!$this->_canBeUsed()) {
-            $oEvent->set("surveysettings.{$this->id}", array(
-                'name' => get_class($this),
-                'settings' => array(
-                    'warning'=> array(
-                        'type'=>'info',
-                        'content'=>\CHtml::tag("div",array('class'=>'alert alert-danger'),$this->gT("You can not use this plugin with your current LimeSurvey version and active plugin")),
-                    ),
-                ),
-            ));
-            return;
-        }
         $oEvent->set("surveysettings.{$this->id}", array(
             'name' => get_class($this),
             'settings' => array(
@@ -191,13 +152,7 @@ class registerQuick extends PluginBase {
      */
     public function beforeRegister()
     {
-        if (!$this->getEvent()) {
-            throw new CHttpException(403);
-        }
-        if(!$this->_canBeUsed()) {
-            return;
-        }
-        $iSurveyId=$this->getEvent()->get('surveyid');
+         $iSurveyId=$this->getEvent()->get('surveyid');
         if($this->get('quickRegistering','Survey',$iSurveyId)){
             
             /* Control survey access and Fix langage according to survey @see https://bugs.limesurvey.org/view.php?id=12641 */
@@ -221,12 +176,6 @@ class registerQuick extends PluginBase {
     */
     public function beforeRegisterForm()
     {
-        if (!$this->getEvent()) {
-            throw new CHttpException(403);
-        }
-        if(!$this->_canBeUsed()) {
-            return;
-        }
         $iSurveyId=$this->getEvent()->get('surveyid');
         if($this->get('quickRegistering','Survey',$iSurveyId)){
             $this->subscribe('getPluginTwigPath');
@@ -239,9 +188,6 @@ class registerQuick extends PluginBase {
      */
     public function getPluginTwigPath()
     {
-        if (!$this->getEvent()) {
-            throw new CHttpException(403);
-        }
         $viewPath = dirname(__FILE__)."/views";
         $forcedPath = dirname(__FILE__)."/forced";
         $this->getEvent()->append('TwigExtendOption', array($viewPath));
