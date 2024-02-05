@@ -3,11 +3,11 @@
  * Alternative solution for registering
  *
  * @author Denis Chenu <denis@sondages.pro>
- * @copyright 2017-2022 Denis Chenu <http://www.sondages.pro>
+ * @copyright 2017-2024 Denis Chenu <http://www.sondages.pro>
  * @copyright 2017 SICODA GmbH <http://www.sicoda.de>
  * @copyright 2017 www.marketaccess.ca <https://www.marketaccess.ca/>
  * @license AGPL v3
- * @version 1.3.0
+ * @version 1.3.1
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,9 @@ class registerQuick extends PluginBase {
 
         $this->subscribe('beforeRegisterForm');
         $this->subscribe('beforeRegister');
-
-        $this->subscribe('getValidScreenFiles');
+        if (intval(App()->getConfig('versionnumber')) <= 3) {
+            $this->subscribe('getValidScreenFiles');
+        }
 
     }
 
